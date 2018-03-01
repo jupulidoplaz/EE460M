@@ -9,15 +9,15 @@ reg [2:0] FinishTime, Counter;
 initial
 begin
 {Ga, Ya, Ra, Gb, Yb, Rb, Gw, Rw} = 8'b00000000;
-//Counter = 0;
+Counter = 0;
 NextState = 0;
+FinishTime = 1;
 end
 
 always @(RST)
 begin
 	if (RST == 1)
 	begin
-		Counter <= 0;
 		State <= 9;
 	end
 	else
