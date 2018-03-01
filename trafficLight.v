@@ -2,12 +2,15 @@ module trafficLight(CLK, RST, Ga, Ya, Ra, Gb, Yb, Rb, Gw, Rw);
 input CLK, RST;
 output Ga, Ya, Ra, Gb, Yb, Rb, Gw, Rw;
 
-reg Counter, FinishTime, State, NextState, Ga, Ya, Ra, Gb, Yb, Rb, Gw, Rw;
+reg Ga, Ya, Ra, Gb, Yb, Rb, Gw, Rw;
+reg [3:0] State, NextState;
+reg [2:0] FinishTime, Counter;
 
 initial
 begin
-Counter = 0;
-State = 0;
+{Ga, Ya, Ra, Gb, Yb, Rb, Gw, Rw} = 8'b00000000;
+//Counter = 0;
+NextState = 0;
 end
 
 always @(RST)
@@ -15,29 +18,28 @@ begin
 	if (RST == 1)
 	begin
 		Counter <= 0;
-		State <= 6;
+		State <= 9;
 	end
 	else
-	State = 0;
+	begin
+		if (RST == 0)
+		State = 0;
+	end
 end
 
 
 always @(posedge CLK)
 begin
 	Counter = Counter + 1;
-	if(State == 5)
-		Rw = ~Rw;
 	if (Counter == FinishTime)
-		begin
-			State = NextState;
-			Counter = 0;
-		end
+		State = NextState;
 end
 
 
 
 always @(State)
 begin
+	Counter = 0;
 	case (State)
 	0:	
 		begin
@@ -52,6 +54,7 @@ begin
 			NextState <= 2;
 			FinishTime <= 4;
 			Ga <= 0;
+			Ya <= 1;
 		end
 
 	2:
@@ -78,7 +81,7 @@ begin
 			{Rb, Gw} <= 2'b11;
 		end
 
-	5:
+/*	5:
 		begin
 			NextState <= 0;
 			FinishTime <= 4;
@@ -92,7 +95,59 @@ begin
 			FinishTime <= 2;
 			{Ya, Ga, Yb, Ga, Gw} <= 5'b00000;
 			{Ra, Rb, Rw} <= ~{Ra, Rb, Rw};
+		end */
+
+	5:
+		begin
+			NextState <= 6;
+			FinishTime <= 1;
+			Gw <= 0;
+			Rw <= 1;
 		end
+	
+	6: 
+		begin
+			NextState <= 7;
+			FinishTime <= 1;
+			Rw <= 0;
+		end
+
+	7:
+		begin
+			NextState <= 8;
+			FinishTime <= 1;
+			Rw <= 1;
+		end
+
+	8:
+		begin
+			NextState <= 0;
+			FinishTime <= 1;
+			Rw <= 0;
+		end
+
+	9:
+		begin
+			NextState <= 10;
+			FinishTime <= 2;
+			{Ya, Ga, Yb, Ga, Gw} <= 5'b00000;
+			{Ra, Rb, Rw} <= 3'b000;
+		end
+
+	10:
+		begin
+			NextState <= 11;
+			FinishTime <=2;
+			{Ra, Rb, Rw} <= ~{Ra, Rb, Rw};
+		end
+
+	11:
+		begin
+			NextState <= 10;
+			FinishTime <=2;
+			{Ra, Rb, Rw} <= ~{Ra, Rb, Rw};
+		end
+
 	endcase
 end
 
