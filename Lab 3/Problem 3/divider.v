@@ -11,7 +11,7 @@ module complexDivider(clk100Mhz, slowClk);
 
   always @ (posedge clk100Mhz)
   begin
-    if(counter == 12000000) begin  //original clock period: 10ns, new clock period = 10ns*12500000 = .125 s
+    if(counter == 12500000) begin  //original clock period: 10ns, new clock period = 10ns*12500000 = .125 s
       counter <= 1;
       slowClk <= ~slowClk;
     end
