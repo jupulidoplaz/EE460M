@@ -1,0 +1,10 @@
+`define BCD0 BCD_num[3:0]
+
+module BCD_sevenseg(BCD_num, AN3, AN2, AN1, AN0, A, B, C, D, E, F, G)
+input [15:0] BCD_num;
+output AN3, AN2, AN1, AN0, A, B, C, D, E, F, G;
+
+
+
+
+endmodule
