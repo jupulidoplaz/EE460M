@@ -1,10 +1,10 @@
-module SP_deboncer(button, pressed, CLK) //waits until button is released to return a 1 when button is pressed
+module SP_debouncer(button, pressed, CLK); //waits until button is released to return a 1 when button is pressed
 input button, CLK;
 output pressed;
 
-reg Qa, Qb, Qc, pressed;
+reg Qa, Qb, Qc;
 
-pressed = Qb & ~Qc;
+assign pressed = Qb & ~Qc;
 
 always @(posedge CLK)
 begin
@@ -13,4 +13,4 @@ Qb <= Qa;
 Qc <= Qb;
 end
 
-emdmodule
+endmodule
