@@ -2,13 +2,90 @@
 `define BCD1 BCD_num[7:4]
 `define BCD2 BCD_num[11:8]
 `define BCD3 BCD_num[15:12]
-`
-module BCD_sevenseg(BCD_num, AN3, AN2, AN1, AN0, A, B, C, D, E, F, G);
+module BCD_sevenseg(BCD_num, AN3, AN2, AN1, AN0, A, B, C, D, E, F, G, CLK);
 input [15:0] BCD_num;
-output AN3, AN2, AN1, AN0, A, B, C, D, E, F, G;
+input CLK;
+output reg AN3, AN2, AN1, AN0, A, B, C, D, E, F, G;
 
+reg [2:0] State;
 
+initial
+begin
+State = 0;
+end
 
-
+always @(posedge CLK)
+begin
+	case(State)
+		0:	begin
+			{AN0,AN1,AN2,AN3} = 4'b0111;
+			case(`BCD0)
+				0:	{A,B,C,D,E,F,G} = 7'b0000001;
+				1:	{A,B,C,D,E,F,G} = 7'b1001111;
+				2:	{A,B,C,D,E,F,G} = 7'b0010010;
+				3:	{A,B,C,D,E,F,G} = 7'b0000110;
+				4:	{A,B,C,D,E,F,G} = 7'b1001100;
+				5:	{A,B,C,D,E,F,G} = 7'b0100100;
+				6:	{A,B,C,D,E,F,G} = 7'b0100000;
+				7:	{A,B,C,D,E,F,G} = 7'b0001110;
+				8:	{A,B,C,D,E,F,G} = 7'b0000000;
+				9:	{A,B,C,D,E,F,G} = 7'b0000100;
+				default {A,B,C,D,E,F,G} = 7'b0000000;
+			endcase
+			State = 1;
+			end
+		1:	begin
+			{AN0,AN1,AN2,AN3} = 4'b1011;
+			case(`BCD1)
+				0:	{A,B,C,D,E,F,G} = 7'b0000001;
+				1:	{A,B,C,D,E,F,G} = 7'b1001111;
+				2:	{A,B,C,D,E,F,G} = 7'b0010010;
+				3:	{A,B,C,D,E,F,G} = 7'b0000110;
+				4:	{A,B,C,D,E,F,G} = 7'b1001100;
+				5:	{A,B,C,D,E,F,G} = 7'b0100100;
+				6:	{A,B,C,D,E,F,G} = 7'b0100000;
+				7:	{A,B,C,D,E,F,G} = 7'b0001110;
+				8:	{A,B,C,D,E,F,G} = 7'b0000000;
+				9:	{A,B,C,D,E,F,G} = 7'b0000100;
+				default {A,B,C,D,E,F,G} = 7'b0000000;
+			endcase
+			State = 2;
+			end
+		2:	begin
+			{AN0,AN1,AN2,AN3} = 4'b1101;
+			case(`BCD2)
+				0:	{A,B,C,D,E,F,G} = 7'b0000001;
+				1:	{A,B,C,D,E,F,G} = 7'b1001111;
+				2:	{A,B,C,D,E,F,G} = 7'b0010010;
+				3:	{A,B,C,D,E,F,G} = 7'b0000110;
+				4:	{A,B,C,D,E,F,G} = 7'b1001100;
+				5:	{A,B,C,D,E,F,G} = 7'b0100100;
+				6:	{A,B,C,D,E,F,G} = 7'b0100000;
+				7:	{A,B,C,D,E,F,G} = 7'b0001110;
+				8:	{A,B,C,D,E,F,G} = 7'b0000000;
+				9:	{A,B,C,D,E,F,G} = 7'b0000100;
+				default {A,B,C,D,E,F,G} = 7'b0000000;
+			endcase
+			State = 3;
+			end
+		3:	begin
+			{AN0,AN1,AN2,AN3} = 4'b1110;
+			case(`BCD3)
+				0:	{A,B,C,D,E,F,G} = 7'b0000001;
+				1:	{A,B,C,D,E,F,G} = 7'b1001111;
+				2:	{A,B,C,D,E,F,G} = 7'b0010010;
+				3:	{A,B,C,D,E,F,G} = 7'b0000110;
+				4:	{A,B,C,D,E,F,G} = 7'b1001100;
+				5:	{A,B,C,D,E,F,G} = 7'b0100100;
+				6:	{A,B,C,D,E,F,G} = 7'b0100000;
+				7:	{A,B,C,D,E,F,G} = 7'b0001110;
+				8:	{A,B,C,D,E,F,G} = 7'b0000000;
+				9:	{A,B,C,D,E,F,G} = 7'b0000100;
+				default {A,B,C,D,E,F,G} = 7'b0000000;
+			endcase
+			State = 0;
+			end
+	endcase
+end
 
 endmodule
