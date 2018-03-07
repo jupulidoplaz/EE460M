@@ -4,6 +4,13 @@ output pressed;
 
 reg Qa, Qb, Qc;
 
+initial
+begin
+Qa = 0;
+Qb = 0;
+Qc = 0;
+end
+
 assign pressed = Qb & ~Qc;
 
 always @(posedge CLK)
