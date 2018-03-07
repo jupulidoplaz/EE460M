@@ -1,8 +1,12 @@
 `define BCD0 BCD_num[3:0]
-
-module BCD_sevenseg(BCD_num, AN3, AN2, AN1, AN0, A, B, C, D, E, F, G)
+`define BCD1 BCD_num[7:4]
+`define BCD2 BCD_num[11:8]
+`define BCD3 BCD_num[15:12]
+`
+module BCD_sevenseg(BCD_num, AN3, AN2, AN1, AN0, A, B, C, D, E, F, G);
 input [15:0] BCD_num;
 output AN3, AN2, AN1, AN0, A, B, C, D, E, F, G;
+
 
 
 
