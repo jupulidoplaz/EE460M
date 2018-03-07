@@ -11,7 +11,7 @@
 `define Zdig2 Z[11:8]
 `define Zdig3 Z[15:12]
 
-module BDC4_Adder(X,Y,Z,Co);
+module BCD4_adder(X,Y,Z,Co);
 input [15:0] X, Y;
 output [15:0] Z;
 output Co;
