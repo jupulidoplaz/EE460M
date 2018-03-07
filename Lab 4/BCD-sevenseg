@@ -19,7 +19,7 @@ end
 
 always @(posedge CLK)
 begin
-	if (Counter == 5) Counter = 0;
+	if (Counter == 5) Counter = 0; //should be 50000
 	else Counter = Counter + 1;
 
 	if (BCD_num == 0) 
