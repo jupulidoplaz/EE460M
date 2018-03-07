@@ -7,7 +7,7 @@
 `define Zdig2 Z[11:8]
 `define Zdig3 Z[15:12]
 
-module BCD4_decrement (X, Z, Bo); //decrements BCD number X by 1;
+module BCD4_decrement(X, Z, Bo); //decrements BCD number X by 1 and outputs Z.
 input [15:0] X;
 output [15:0] Z;
 output Bo;			//comes out as 1 if overflowed 
@@ -28,5 +28,5 @@ assign B2 = (D2 == 4'b1111) ? 1'b1 : 1'b0;
 
 assign D3 = `Xdig3 - B2;
 assign `Zdig3 = (D3 == 4'b1111) ? 4'b1001 : (D3);
-assign Bo = (D3 == 4'b1111) ? 1'b1 : 1'b0;    //if number originally 0, Bo = 1.
+assign Bo = (D3 == 4'b1111) ? 1'b1 : 1'b0;
 endmodule
