@@ -2,122 +2,153 @@
 `define BCD1 BCD_num[7:4]
 `define BCD2 BCD_num[11:8]
 `define BCD3 BCD_num[15:12]
+`define counter1 500	//should be 500
+`define counter2 1000	//should be 1000
+
 module BCD_sevenseg(BCD_num, AN3, AN2, AN1, AN0, A, B, C, D, E, F, G, CLK);
-input [15:0] BCD_num;
+input [15:0]BCD_num;
 input CLK;
 output reg AN3, AN2, AN1, AN0, A, B, C, D, E, F, G;
 
-reg [2:0] State;
-reg [15:0] Counter;
-reg Flicker, Expired;
+reg [2:0]State;
+reg [1:0]flickerState;
+reg show;
+reg [9:0]counter;
 
 initial
 begin
 State = 0;
-Counter = 0;
+counter = 0;
 end
 
 always @(posedge CLK)
 begin
-	if (Counter == 5) Counter = 0; //should be 50000
-	else Counter = Counter + 1;
-
-	if (BCD_num == 0) 
-		begin
-		Flicker = 0;
-		Expired = 1;
-		{AN0,AN1,AN2,AN3} = 4'b1111;
-		end
-	else if (BCD_num < 8'b11001001)
-		begin
-		Flicker = 1;
-		Expired = 0;
-		end
+	if (BCD_num == 16'b0000000000000000)
+		flickerState = 0;
+	else if (BCD_num < 16'b0000001000000000)
+		flickerState = 1;
 	else
-		begin
-		Flicker = 0;
-		Expired = 0;
-		end
+		flickerState = 2; 
 
-	if (Expired == 0)
-	begin
-	case(State)
+	case(flickerState)
 		0:	begin
-			if ((Flicker == 1) && (BCD_num & 1'b1))	{AN0,AN1,AN2,AN3} = 4'b1111;
-			else {AN0,AN1,AN2,AN3} = 4'b0111;
-			case(`BCD0)
-				0:	{A,B,C,D,E,F,G} = 7'b0000001;
-				1:	{A,B,C,D,E,F,G} = 7'b1001111;
-				2:	{A,B,C,D,E,F,G} = 7'b0010010;
-				3:	{A,B,C,D,E,F,G} = 7'b0000110;
-				4:	{A,B,C,D,E,F,G} = 7'b1001100;
-				5:	{A,B,C,D,E,F,G} = 7'b0100100;
-				6:	{A,B,C,D,E,F,G} = 7'b0100000;
-				7:	{A,B,C,D,E,F,G} = 7'b0001110;
-				8:	{A,B,C,D,E,F,G} = 7'b0000000;
-				9:	{A,B,C,D,E,F,G} = 7'b0000100;
-				default {A,B,C,D,E,F,G} = 7'b1111111;
-			endcase
-			State = 1;
+				if(counter >= `counter1)	//to avoid errors changing flickerStates
+				begin
+					counter = 0;
+					show = ~show;
+				end
+				else
+					counter = counter + 1;
+					show = show;
 			end
 		1:	begin
-			if ((Flicker == 1) && (BCD_num & 1'b1))	{AN0,AN1,AN2,AN3} = 4'b1111;
-			else {AN0,AN1,AN2,AN3} = 4'b1011;
-			case(`BCD1)
-				0:	{A,B,C,D,E,F,G} = 7'b0000001;
-				1:	{A,B,C,D,E,F,G} = 7'b1001111;
-				2:	{A,B,C,D,E,F,G} = 7'b0010010;
-				3:	{A,B,C,D,E,F,G} = 7'b0000110;
-				4:	{A,B,C,D,E,F,G} = 7'b1001100;
-				5:	{A,B,C,D,E,F,G} = 7'b0100100;
-				6:	{A,B,C,D,E,F,G} = 7'b0100000;
-				7:	{A,B,C,D,E,F,G} = 7'b0001110;
-				8:	{A,B,C,D,E,F,G} = 7'b0000000;
-				9:	{A,B,C,D,E,F,G} = 7'b0000100;
-				default {A,B,C,D,E,F,G} = 7'b1111111;
-			endcase
-			State = 2;
+				if(counter >= `counter2)
+				begin
+					counter = 0;
+					show = ~show;
+				end
+				else
+				begin
+					counter = counter + 1;
+					show = show;
+				end
 			end
 		2:	begin
-			if ((Flicker == 1) && (BCD_num & 1'b1))	{AN0,AN1,AN2,AN3} = 4'b1111;
-			else {AN0,AN1,AN2,AN3} = 4'b1101;
-			case(`BCD2)
-				0:	{A,B,C,D,E,F,G} = 7'b0000001;
-				1:	{A,B,C,D,E,F,G} = 7'b1001111;
-				2:	{A,B,C,D,E,F,G} = 7'b0010010;
-				3:	{A,B,C,D,E,F,G} = 7'b0000110;
-				4:	{A,B,C,D,E,F,G} = 7'b1001100;
-				5:	{A,B,C,D,E,F,G} = 7'b0100100;
-				6:	{A,B,C,D,E,F,G} = 7'b0100000;
-				7:	{A,B,C,D,E,F,G} = 7'b0001110;
-				8:	{A,B,C,D,E,F,G} = 7'b0000000;
-				9:	{A,B,C,D,E,F,G} = 7'b0000100;
-				default {A,B,C,D,E,F,G} = 7'b1111111;
-			endcase
-			State = 3;
+				show = 1;
+				counter = 0;
 			end
-		3:	begin
-			if ((Flicker == 1) && (BCD_num & 1'b1))	{AN0,AN1,AN2,AN3} = 4'b1111;
-			else {AN0,AN1,AN2,AN3} = 4'b1110;
-			case(`BCD3)
-				0:	{A,B,C,D,E,F,G} = 7'b0000001;
-				1:	{A,B,C,D,E,F,G} = 7'b1001111;
-				2:	{A,B,C,D,E,F,G} = 7'b0010010;
-				3:	{A,B,C,D,E,F,G} = 7'b0000110;
-				4:	{A,B,C,D,E,F,G} = 7'b1001100;
-				5:	{A,B,C,D,E,F,G} = 7'b0100100;
-				6:	{A,B,C,D,E,F,G} = 7'b0100000;
-				7:	{A,B,C,D,E,F,G} = 7'b0001110;
-				8:	{A,B,C,D,E,F,G} = 7'b0000000;
-				9:	{A,B,C,D,E,F,G} = 7'b0000100;
-				default {A,B,C,D,E,F,G} = 7'b1111111;
-			endcase
-			State = 0;
-			end
+		default:	
+		begin
+			show = show;
+			counter = counter; 
+		end
 	endcase
+
+	if (show == 1)
+	begin
+		case(State)
+			0:	begin
+				{AN0,AN1,AN2,AN3} = 4'b0111;
+				case(`BCD0)
+					0:	{A,B,C,D,E,F,G} <= 7'b0000001;
+					1:	{A,B,C,D,E,F,G} <= 7'b1001111;
+					2:	{A,B,C,D,E,F,G} <= 7'b0010010;
+					3:	{A,B,C,D,E,F,G} <= 7'b0000110;
+					4:	{A,B,C,D,E,F,G} <= 7'b1001100;
+					5:	{A,B,C,D,E,F,G} <= 7'b0100100;
+					6:	{A,B,C,D,E,F,G} <= 7'b0100000;
+					7:	{A,B,C,D,E,F,G} <= 7'b0001110;
+					8:	{A,B,C,D,E,F,G} <= 7'b0000000;
+					9:	{A,B,C,D,E,F,G} <= 7'b0000100;
+					default: {A,B,C,D,E,F,G} <= 7'b1010101;
+				endcase
+				State = 1;
+				end
+			1:	begin
+				{AN0,AN1,AN2,AN3} = 4'b1011;
+				case(`BCD1)
+					0:	{A,B,C,D,E,F,G} = 7'b0000001;
+					1:	{A,B,C,D,E,F,G} = 7'b1001111;
+					2:	{A,B,C,D,E,F,G} = 7'b0010010;
+					3:	{A,B,C,D,E,F,G} = 7'b0000110;
+					4:	{A,B,C,D,E,F,G} = 7'b1001100;
+					5:	{A,B,C,D,E,F,G} = 7'b0100100;
+					6:	{A,B,C,D,E,F,G} = 7'b0100000;
+					7:	{A,B,C,D,E,F,G} = 7'b0001110;
+					8:	{A,B,C,D,E,F,G} = 7'b0000000;
+					9:	{A,B,C,D,E,F,G} = 7'b0000100;
+					default: {A,B,C,D,E,F,G} = 7'b1010101	;
+				endcase
+				State = 2;
+				end
+			2:	begin
+				{AN0,AN1,AN2,AN3} = 4'b1101;
+				case(`BCD2)
+					0:	{A,B,C,D,E,F,G} = 7'b0000001;
+					1:	{A,B,C,D,E,F,G} = 7'b1001111;
+					2:	{A,B,C,D,E,F,G} = 7'b0010010;
+					3:	{A,B,C,D,E,F,G} = 7'b0000110;
+					4:	{A,B,C,D,E,F,G} = 7'b1001100;
+					5:	{A,B,C,D,E,F,G} = 7'b0100100;
+					6:	{A,B,C,D,E,F,G} = 7'b0100000;
+					7:	{A,B,C,D,E,F,G} = 7'b0001110;
+					8:	{A,B,C,D,E,F,G} = 7'b0000000;
+					9:	{A,B,C,D,E,F,G} = 7'b0000100;
+					default {A,B,C,D,E,F,G} = 7'b1010101;
+				endcase
+				State = 3;
+				end
+			3:	begin
+				{AN0,AN1,AN2,AN3} = 4'b1110;
+				case(`BCD3)
+					0:	{A,B,C,D,E,F,G} = 7'b0000001;
+					1:	{A,B,C,D,E,F,G} = 7'b1001111;
+					2:	{A,B,C,D,E,F,G} = 7'b0010010;
+					3:	{A,B,C,D,E,F,G} = 7'b0000110;
+					4:	{A,B,C,D,E,F,G} = 7'b1001100;
+					5:	{A,B,C,D,E,F,G} = 7'b0100100;
+					6:	{A,B,C,D,E,F,G} = 7'b0100000;
+					7:	{A,B,C,D,E,F,G} = 7'b0001110;
+					8:	{A,B,C,D,E,F,G} = 7'b0000000;
+					9:	{A,B,C,D,E,F,G} = 7'b0000100;
+					default: {A,B,C,D,E,F,G} = 7'b1010101;
+				endcase
+				State = 0;
+				end
+
+			default:
+			begin
+				{AN0,AN1,AN2,AN3} = 4'b1010;
+				{A,B,C,D,E,F,G} = 7'b1010101;
+				State = 0;
+			end
+		endcase
 	end
-	else if (Counter == 0) {AN0,AN1,AN2,AN3} = ~{AN0,AN1,AN2,AN3};
-	else {AN0,AN1,AN2,AN3} = {AN0,AN1,AN2,AN3};
+	else
+	begin
+		{AN0, AN1, AN2, AN3} <= 4'b1111;
+		{A,B,C,D,E,F,G} <= 7'b1111111;
+	end
 end
 
 endmodule
