@@ -2,8 +2,7 @@
 `define BCD1 BCD_num[7:4]
 `define BCD2 BCD_num[11:8]
 `define BCD3 BCD_num[15:12]
-`define counter1 600	//should be 500
-`define counter2 1800	//should be 1000
+`define counter1 490	
 
 module BCD_sevenseg(BCD_num, AN3, AN2, AN1, AN0, A, B, C, D, E, F, G, CLK);
 input [15:0]BCD_num;
@@ -15,27 +14,28 @@ reg [1:0]flickerState;
 reg show;
 reg [9:0]counter;
 
+wire odd;
+
 initial
 begin
 State = 0;
 counter = 0;
 end
 
+assign odd = BCD_num & 16'b0000000000000001;
+
 always @(posedge CLK)
 begin
 	if (BCD_num == 16'b0000000000000000)
-		if (flickerstate != 0) counter = 0;
 		flickerState = 0;
-	else if (BCD_num < 16'b0000001000000000)
-		if (flickerstate != 1) counter = 0;
+	else if (BCD_num < 16'b0000001000000001)
 		flickerState = 1;
 	else
-		if (flickerstate != 2) counter = 0;
 		flickerState = 2; 
 
 	case(flickerState)
 		0:	begin
-				if(counter > `counter1)	//to avoid errors changing flickerStates
+				if(counter >= `counter1)	//to avoid errors changing flickerStates
 				begin
 					counter = 0;
 					show = ~show;
@@ -45,16 +45,11 @@ begin
 					show = show;
 			end
 		1:	begin
-				if(counter > `counter2)
-				begin
-					counter = 0;
-					show = ~show;
-				end
+		        counter = 0;
+				if(odd)
+				    show = 0;
 				else
-				begin
-					counter = counter + 1;
-					show = show;
-				end
+                    show = 1;
 			end
 		2:	begin
 				show = 1;
@@ -100,7 +95,7 @@ begin
 					7:	{A,B,C,D,E,F,G} <= 7'b0001111;
 					8:	{A,B,C,D,E,F,G} <= 7'b0000000;
 					9:	{A,B,C,D,E,F,G} <= 7'b0000100;
-					default: {A,B,C,D,E,F,G} = 7'b1010101	;
+					default: {A,B,C,D,E,F,G} <= 7'b1010101	;
 				endcase
 				State = 2;
 				end
@@ -117,7 +112,7 @@ begin
 					7:	{A,B,C,D,E,F,G} <= 7'b0001111;
 					8:	{A,B,C,D,E,F,G} <= 7'b0000000;
 					9:	{A,B,C,D,E,F,G} <= 7'b0000100;
-					default {A,B,C,D,E,F,G} = 7'b1010101;
+					default {A,B,C,D,E,F,G} <= 7'b1010101;
 				endcase
 				State = 3;
 				end
@@ -134,15 +129,15 @@ begin
 					7:	{A,B,C,D,E,F,G} <= 7'b0001111;
 					8:	{A,B,C,D,E,F,G} <= 7'b0000000;
 					9:	{A,B,C,D,E,F,G} <= 7'b0000100;
-					default: {A,B,C,D,E,F,G} = 7'b1010101;
+					default: {A,B,C,D,E,F,G} <= 7'b1010101;
 				endcase
 				State = 0;
 				end
 
 			default:
 			begin
-				{AN0,AN1,AN2,AN3} = 4'b1010;
-				{A,B,C,D,E,F,G} = 7'b1010101;
+				{AN0,AN1,AN2,AN3} <= 4'b1010;
+				{A,B,C,D,E,F,G} <= 7'b1010101;
 				State = 0;
 			end
 		endcase
