@@ -1,5 +1,6 @@
 `define MAX 16'b1001100110011001	//BCD # 9999
 `define MIN 16'b0000000000000000	//BCD # 0
+`define counter 10
 
 module park_meter(clk10Hz, res10, res205, b50, b150, b200, b500, BCD_num);
 
@@ -32,9 +33,9 @@ assign press[3:0] = {add50, add150, add200, add500};
 
 always @(posedge clk10Hz)	//assuming that clock runs at 10Hz (or lower?)
 begin
-	counter <= counter + 1;
-	if (counter == 10)
-		counter <=0;
+	counter = counter + 1;
+	if (counter == `counter)
+		counter <= 0;
 	if(res10 == 1)
 	 begin
 		BCD_num = 16'b0000000000010000;
@@ -58,7 +59,7 @@ begin
 				BCD_num = `MAX;
 			else
 				BCD_num = add_num;
-			if (counter == 10)		//decrement every second
+			if (counter == `counter)		//decrement every second
 			begin
 				if(zero == 1)
 					BCD_num = `MIN;
