@@ -2,7 +2,7 @@
 `define BCD1 BCD_num[7:4]
 `define BCD2 BCD_num[11:8]
 `define BCD3 BCD_num[15:12]
-`define counter1 490	
+`define counter1 499	
 
 module BCD_sevenseg(BCD_num, AN3, AN2, AN1, AN0, A, B, C, D, E, F, G, CLK);
 input [15:0]BCD_num;
