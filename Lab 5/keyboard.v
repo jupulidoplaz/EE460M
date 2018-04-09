@@ -1,15 +1,16 @@
-module keyboard(CLK, ps2CLK, ps2DATA, an, seg, LED, LED2, register);
+module keyboard(CLK, ps2CLK, ps2DATA, an, seg, LED, flash);
     
 input ps2CLK, ps2DATA, CLK;
-output LED, LED2;
+//output wire flash;
+output LED;
 output [3:0] an;
 output [6:0] seg;
-output [7:0] register;
 
+output wire flash;
+wire idle;
 wire [7:0] num;
-wire idle, flash;
 
-reader R1 (ps2CLK, ps2DATA, num, idle, flash, register, LED2);
+reader R1 (ps2CLK, ps2DATA, num, flash, idle);
 sevenSeg S1 (CLK, num, an, seg, idle);
 strobe S2 (CLK, flash, LED);
 
