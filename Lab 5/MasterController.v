@@ -1,4 +1,4 @@
-'define S_Key 0
+'define S_Key 0						// *** TO BE UPDATED WITH ACTUAL VALUES *** 
 'define P_Key 0
 'define R_Key 0
 'define ESC_Key 0
@@ -63,66 +63,68 @@ end
 
 always @(posedge clk50Hz)								// for controlling snake movement
 begin
-	if (snakeDir == North)					// North
+	if (State === Play)
 	begin
-		if (keycode == RIGHT_Key)
+		if (snakeDir == North)					// North
 		begin
-			snakeDir = East;
-			if (headX == 629) snakeDead = 1;
+			if (keycode == RIGHT_Key)
+			begin
+				snakeDir = East;
+				if (headX == 629) snakeDead = 1;
+			end
+			else if (keycode == LEFT_Key)
+			begin
+				snakeDir = West;
+				if (headX == 0) snakeDead = 1;
+			end
+			else if (headY == 0) snakeDead = 1;
+			if (snakeDead == 0) headY = headY - 1;
 		end
-		else if (keycode == LEFT_Key)
+		else if (snakeDir == East)				// East
 		begin
-			snakeDir = West;
-			if (headX == 0) snakeDead = 1;
+			if (keycode == UP_Key)
+			begin
+				snakeDir = North;
+				if (headY == 0) snakeDead = 1;
+			end
+			else if (keycode == DOWN_Key)
+			begin
+				snakeDir = South;
+				if (headY == 469) snakeDead = 1;
+			end
+			else if (headX == 629) snakeDead = 1;
+			if (snakeDead = 0) headX = headX + 1;
 		end
-		else if (headY == 0) snakeDead = 1;
-		if (snakeDead == 0) headY = headY - 1;
-	end
-	else if (snakeDir == East)				// East
-	begin
-		if (keycode == UP_Key)
+		else if (snakeDir == South)				// South
 		begin
-			snakeDir = North;
-			if (headY == 0) snakeDead = 1;
+			if (keycode == RIGHT_Key)
+			begin
+				snakeDir = East;
+				if (headX == 629) snakeDead = 1;
+			end
+			else if (keycode == LEFT_Key)
+			begin
+				snakeDir = West;
+				if (headX == 0) snakeDead = 1;
+			end
+			else if (headY == 469) snakeDead = 1;
+			if (snakeDead == 0) headY = headY + 1;
 		end
-		else if (keycode == DOWN_Key)
+		else if (snakeDir == West)				// West
 		begin
-			snakeDir = South;
-			if (headY == 469) snakeDead = 1;
+			if (keycode == UP_Key)
+			begin
+				snakeDir = North;
+				if (headY == 0) snakeDead = 1;
+			end
+			else if (keycode == DOWN_Key)
+			begin
+				snakeDir = South;
+				if (headY == 469) snakeDead = 1;
+			end
+			else if (headX == 0) snakeDead = 1;
+			if (snakeDead = 0) headX = headX - 1;
 		end
-		else if (headX == 629) snakeDead = 1;
-		if (snakeDead = 0) headX = headX + 1;
-	end
-	else if (snakeDir == South)				// South
-	begin
-		if (keycode == RIGHT_Key)
-		begin
-			snakeDir = East;
-			if (headX == 629) snakeDead = 1;
-		end
-		else if (keycode == LEFT_Key)
-		begin
-			snakeDir = West;
-			if (headX == 0) snakeDead = 1;
-		end
-		else if (headY == 469) snakeDead = 1;
-		if (snakeDead == 0) headY = headY + 1;
-	end
-	else if (snakeDir == West)				// West
-	begin
-		if (keycode == UP_Key)
-		begin
-			snakeDir = North;
-			if (headY == 0) snakeDead = 1;
-		end
-		else if (keycode == DOWN_Key)
-		begin
-			snakeDir = South;
-			if (headY == 469) snakeDead = 1;
-		end
-		else if (headX == 0) snakeDead = 1;
-		if (snakeDead = 0) headX = headX - 1;
 	end
 end
-
 endmodule
