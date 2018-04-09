@@ -1,5 +1,5 @@
-module VGA(CLK25MHz, hsync, vsync, R, G, B, SW0, SW1, SW2, SW3, SW4, SW5, SW6, SW7);
-input CLK25MHz, SW0, SW1, SW2, SW3, SW4, SW5, SW6, SW7;
+module VGA(clk25MHz, hsync, vsync, R, G, B, SW0, SW1, SW2, SW3, SW4, SW5, SW6, SW7);
+input clk25MHz, SW0, SW1, SW2, SW3, SW4, SW5, SW6, SW7;
 output hsync, vsync, R, G, B;
 
 reg [10:0] hcount, vcount;				// increment variables for horizontal and vertical directions
@@ -12,7 +12,7 @@ begin
 	vcount = 0;
 end
 
-always @(CLK25MHz)
+always @(posedge clk25MHz)
 begin
 	if (vcount <= 479)							// vertical in visible range
 	begin
