@@ -1,11 +1,11 @@
-'define S_Key 0						// *** TO BE UPDATED WITH ACTUAL VALUES *** 
-'define P_Key 0
-'define R_Key 0
-'define ESC_Key 0
-'define UP_Key 0
-'define DOWN_Key 0
-'define LEFT_Key 0
-'define RIGHT_Key 0
+'define S_Key 8'h1B						
+'define P_Key 8'h4D
+'define R_Key 8'h2D
+'define ESC_Key 8'h76
+'define UP_Key 8'h75
+'define DOWN_Key 8'h72
+'define LEFT_Key 8'h6B
+'define RIGHT_Key 8'h74
 
 'define Paused 0
 'define Play 1
