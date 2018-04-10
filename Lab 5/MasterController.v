@@ -29,8 +29,8 @@ reg [10:0] headX, headY;		// always top left corner of head
 initial
 begin
 	DispCounter = 3;			// allows increment at start
-	headX = 0;
-	headY = 0;
+	headX = 310;
+	headY = 230;
 end
 
 always @(posedge clk100Mhz)
@@ -51,6 +51,11 @@ begin
 	else if (State == Play)								// Play
 	begin
 		if (snakeDead == 1) State = GameOver;
+		else if (keycode == S_Key)
+		begin
+			headX = 310;
+			headY = 230;
+		end
 		else if (keycode == P_Key) State = Paused;
 		else if (keycode == ESC_Key) State = BlackOut;
 	end
