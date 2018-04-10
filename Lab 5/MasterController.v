@@ -31,6 +31,7 @@ begin
 	DispCounter = 3;			// allows increment at start
 	headX = 310;
 	headY = 230;
+	State = BlackOut;
 end
 
 always @(posedge clk100Mhz)
