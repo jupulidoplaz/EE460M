@@ -98,7 +98,7 @@ begin
 				if (headY == 469) snakeDead = 1;
 			end
 			else if (headX == 629) snakeDead = 1;
-			if (snakeDead = 0) headX = headX + 1;
+			if (snakeDead == 0) headX = headX + 1;
 		end
 		else if (snakeDir == South)				// South
 		begin
