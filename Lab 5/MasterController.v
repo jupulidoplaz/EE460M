@@ -18,7 +18,7 @@
 'define West 3
 
 module Master_Controller(clk100MHz, clk50Hz, newKeyStrobe, keycode);
-input clk100MHz, clk50Hz, newKeyStribe, keycode;
+input clk100MHz, clk50Hz, newKeyStrobe, keycode;
 
 reg [1:0] Counter;
 reg [1:0] State;			// 0 is paused, 1 is playing, 2 is game over, 3 is blacked out
