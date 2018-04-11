@@ -1,5 +1,5 @@
-module Master_Controller(clk100MHz, clk50Hz, clk25MHz, newKeyStrobe, keycode, SnakeOut);
-input clk100MHz, clk50Hz, clk25MHz, newKeyStrobe, keycode;
+module Master_Controller(clk100MHz, clk50Hz, clk25MHz, keycode, SnakeOut);
+input clk100MHz, clk50Hz, clk25MHz, keycode;
 output SnakeOut;
 
 parameter [7:0] S_Key = 8'h1B;
@@ -21,14 +21,15 @@ parameter [1:0] East = 1;
 parameter [1:0] South = 2;
 parameter [1:0] West = 3;
 
-reg [1:0] Counter;
 reg [1:0] State;			// 0 is paused, 1 is playing, 2 is game over, 3 is blacked out
 reg [1:0] snakeDir;
 reg snakeDead;				// necessary to allow for change to GameOver from other always block
 reg [10:0] headX, headY;		// always top left corner of head
-reg [9:0] hcount, vcount;
+reg [10:0] hcount, vcount;
 reg Snake;
 wire SnakeOut;
+wire [7:0] keycode;
+reg revive;
 
 initial
 begin
@@ -36,11 +37,15 @@ begin
 	headY = 230;
 	State = BlackOut;
 	Snake = 0;
+	snakeDir = East;
+	hcount = 0;
+	vcount = 0;
+	snakeDead = 0;
+	revive = 0;
 end
 
 always @(posedge clk100MHz)
 begin
-	Counter = Counter + 1;
 	if (State == Paused)								// Paused
 	begin
 		if (keycode == R_Key) State = Play;
@@ -50,17 +55,20 @@ begin
 	else if ((State == BlackOut) && (keycode == S_Key)) State = Play;		// BlackOut
 	else if (State == GameOver)							// GameOver
 	begin
-		if (keycode == S_Key) State = Play;
-		else if (keycode == ESC_Key) State = BlackOut;
+		if (keycode == S_Key) 
+		begin
+		  State = Play;
+		  revive = 1;
+		end
+		else if (keycode == ESC_Key) 
+		begin
+		  State = BlackOut;
+		  revive = 1;
+		end
 	end
 	else if (State == Play)								// Play
 	begin
 		if (snakeDead == 1) State = GameOver;
-		else if (keycode == S_Key)
-		begin
-			headX = 310;
-			headY = 230;
-		end
 		else if (keycode == P_Key) State = Paused;
 		else if (keycode == ESC_Key) State = BlackOut;
 	end
@@ -82,14 +90,19 @@ end
 
 always @(posedge clk50Hz)								// for controlling snake movement
 begin
-	if (State === Play)
+    if (revive == 1)
+    begin
+        snakeDead = 0;
+        revive = 0;
+    end
+	if (State == Play)
 	begin
 		if (snakeDir == North)					// North
 		begin
 			if (keycode == RIGHT_Key)
 			begin
 				snakeDir = East;
-				if (headX == 629) snakeDead = 1;
+				if (headX == 630) snakeDead = 1;
 			end
 			else if (keycode == LEFT_Key)
 			begin
@@ -109,9 +122,9 @@ begin
 			else if (keycode == DOWN_Key)
 			begin
 				snakeDir = South;
-				if (headY == 469) snakeDead = 1;
+				if (headY == 470) snakeDead = 1;
 			end
-			else if (headX == 629) snakeDead = 1;
+			else if (headX == 630) snakeDead = 1;
 			if (snakeDead == 0) headX = headX + 1;
 		end
 		else if (snakeDir == South)				// South
@@ -119,14 +132,14 @@ begin
 			if (keycode == RIGHT_Key)
 			begin
 				snakeDir = East;
-				if (headX == 629) snakeDead = 1;
+				if (headX == 630) snakeDead = 1;
 			end
 			else if (keycode == LEFT_Key)
 			begin
 				snakeDir = West;
 				if (headX == 0) snakeDead = 1;
 			end
-			else if (headY == 469) snakeDead = 1;
+			else if (headY == 470) snakeDead = 1;
 			if (snakeDead == 0) headY = headY + 1;
 		end
 		else if (snakeDir == West)				// West
@@ -139,7 +152,7 @@ begin
 			else if (keycode == DOWN_Key)
 			begin
 				snakeDir = South;
-				if (headY == 469) snakeDead = 1;
+				if (headY == 470) snakeDead = 1;
 			end
 			else if (headX == 0) snakeDead = 1;
 			if (snakeDead == 0) headX = headX - 1;
@@ -150,4 +163,5 @@ end
 assign SnakeOut = Snake;
 
 endmodule
+
 
