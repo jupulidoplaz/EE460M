@@ -1,5 +1,5 @@
-module VGAController(clk25MHz, hsync, vsync, R, G, B, Snake);
-input clk25MHz, Snake;
+module VGAController(clk25MHz, hsync, vsync, R, G, B, Snake, Black);
+input clk25MHz, Snake, Black;
 output hsync, vsync, R, G, B;
 
 reg [10:0] hcount, vcount;				// increment variables for horizontal and vertical directions
@@ -34,20 +34,29 @@ begin
 	end
 end
 
-always @(Snake)
+always @(Snake, Black)
 begin
-	if (Snake == 1) 				// Blue		snake showing
-	begin
-		Rtemp <= 0;
-		Gtemp <= 0;
-		Btemp <= 4'b1111;	// 255
-	end
-	else 					// White
-	begin
-		Rtemp <= 4'b1111;	// 255
-		Gtemp <= 4'b1111;	// 255
-		Btemp <= 4'b1111;	// 255
-	end
+    if (Black == 1)
+    begin
+        Rtemp <= 0;
+        Gtemp <= 0;
+        Btemp <= 0;
+    end
+    else
+    begin
+    	if (Snake == 1) 				// Blue		snake showing
+    	begin
+    		Rtemp <= 0;
+    		Gtemp <= 0;
+    		Btemp <= 4'b1111;	// 255
+    	end
+    	else 					// White
+    	begin
+    		Rtemp <= 4'b1111;	// 255
+    		Gtemp <= 4'b1111;	// 255
+    		Btemp <= 4'b1111;	// 255
+    	end
+    end
 end
 
 assign vsync = ((vcount == 493) || (vcount == 494)) ? 0 : 1;
@@ -57,3 +66,4 @@ assign G = ((hcount <= 639) && (vcount <= 479)) ? Gtemp : 0;
 assign B = ((hcount <= 639) && (vcount <= 479)) ? Btemp : 0;
 
 endmodule
+
