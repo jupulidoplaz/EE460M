@@ -1,40 +1,44 @@
-'define S_Key 8'h1B						
-'define P_Key 8'h4D
-'define R_Key 8'h2D
-'define ESC_Key 8'h76
-'define UP_Key 8'h75
-'define DOWN_Key 8'h72
-'define LEFT_Key 8'h6B
-'define RIGHT_Key 8'h74
+module Master_Controller(clk100MHz, clk50Hz, clk25MHz, newKeyStrobe, keycode, SnakeOut);
+input clk100MHz, clk50Hz, clk25MHz, newKeyStrobe, keycode;
+output SnakeOut;
 
-'define Paused 0
-'define Play 1
-'define GameOver 2
-'define BlackOut 3
+parameter [7:0] S_Key = 8'h1B;
+parameter [7:0] P_Key = 8'h4D;
+parameter [7:0] R_Key = 8'h2D;
+parameter [7:0] ESC_Key = 8'h76;
+parameter [7:0] UP_Key = 8'h75;
+parameter [7:0] DOWN_Key = 8'h72;
+parameter [7:0] LEFT_Key = 8'h6B;
+parameter [7:0] RIGHT_Key = 8'h74;
 
-'define North 0
-'define East 1
-'define South 2
-'define West 3
+parameter [1:0] Paused = 0;
+parameter [1:0] Play = 1;
+parameter [1:0] GameOver = 2;
+parameter [1:0] BlackOut = 3;
 
-module Master_Controller(clk100MHz, clk50Hz, newKeyStrobe, keycode);
-input clk100MHz, clk50Hz, newKeyStrobe, keycode;
+parameter [1:0] North = 0;
+parameter [1:0] East = 1;
+parameter [1:0] South = 2;
+parameter [1:0] West = 3;
 
 reg [1:0] Counter;
 reg [1:0] State;			// 0 is paused, 1 is playing, 2 is game over, 3 is blacked out
 reg [1:0] snakeDir;
 reg snakeDead;				// necessary to allow for change to GameOver from other always block
 reg [10:0] headX, headY;		// always top left corner of head
+reg [9:0] hcount, vcount;
+reg Snake;
+wire SnakeOut;
 
 initial
 begin
-	DispCounter = 3;			// allows increment at start
 	headX = 310;
 	headY = 230;
 	State = BlackOut;
+	Snake = 0;
 end
 
-always @(posedge clk100Mhz)
+always @(posedge clk100MHz)
 begin
 	Counter = Counter + 1;
 	if (State == Paused)								// Paused
@@ -60,11 +64,20 @@ begin
 		else if (keycode == P_Key) State = Paused;
 		else if (keycode == ESC_Key) State = BlackOut;
 	end
-
-	if (DispCounter == 0)												// *** NEED TO ADD DISPLAY ***
-	begin														// *** NEED TO KEEP TRACK OF SNAKE BODY PARTS FOR SMOOTH MOVEMENT ***
-		
-	end
+end
+	
+always @(posedge clk25MHz)											// *** NEED TO ADD DISPLAY ***
+begin												// *** NEED TO KEEP TRACK OF SNAKE BODY PARTS FOR SMOOTH MOVEMENT ***
+	if ((snakeDir == North) && ((headX <= hcount) && ((headX + 9) >= hcount)) && ((headY <= vcount) || ((headY + 39) >= vcount)))
+		Snake <= 1;
+	else if ((snakeDir == East) && ((headX >= hcount) && (headX <= (hcount + 39))) && ((headY <= vcount) || ((headY + 9) >= vcount)))
+		Snake <= 1;
+	else if ((snakeDir == South) && ((headX >= hcount) && (headX <= (hcount + 9))) && ((headY >= vcount) || (headY <= (vcount + 39))))
+		Snake <= 1;
+	else if ((snakeDir == West) && ((headX <= hcount) && ((headX + 39) >= hcount)) && ((headY >= vcount) || (headY <= (vcount + 9))))
+		Snake <= 1;
+	else
+		Snake <= 0;
 end
 
 always @(posedge clk50Hz)								// for controlling snake movement
@@ -129,8 +142,12 @@ begin
 				if (headY == 469) snakeDead = 1;
 			end
 			else if (headX == 0) snakeDead = 1;
-			if (snakeDead = 0) headX = headX - 1;
+			if (snakeDead == 0) headX = headX - 1;
 		end
 	end
 end
+
+assign SnakeOut = Snake;
+
 endmodule
+
