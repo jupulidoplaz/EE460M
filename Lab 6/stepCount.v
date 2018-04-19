@@ -1,4 +1,4 @@
-module stepCount(CLK, totalSteps, stepCount);
+module stepCount(CLK, totalSteps, stepCount, SI);
 input CLK;
 input [20:0] totalSteps;
 output reg [13:0] stepCount;
