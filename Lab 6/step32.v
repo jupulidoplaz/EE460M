@@ -1,6 +1,7 @@
 module step32(CLK, steps, secClk, secs, reset)
-input CLK, secClk;
+input CLK, secClk, steps;
 input [20:0] totalSteps; 
+output [3:0] secs;
 reg [3:0] secCount, secs;
 reg resFlag;
 reg [6:0] stepCount;
