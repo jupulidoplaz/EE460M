@@ -26,12 +26,17 @@ begin
     totalSteps = 0;
 end
 
-    always@(posedge CLK)
+always@(posedge secCLK)
 begin
-//    if(pastState == state)
-//        clrCounter = 0;
-//    else
-//        clrCounter = 1;
+    if (!stateFlag) begin
+        state <= state;
+        stateFlag <= 1;
+    end
+    else    begin
+        state <= nextState;
+        stateFlag <=0;
+    end
+
     case(state)
         0:  begin               //total step count
                 nextState <= 1;
@@ -64,19 +69,5 @@ begin
 //    else counter = counter + 1;
     totalSteps = totalSteps + 1;    //need to check the bits of totalSteps
 end
-
-    
-always @(posedge secClk)
-begin
-    if (!stateFlag) begin
-        state <= state;
-        stateFlag <= 1;
-    end
-    else    begin
-        state <= nextState;
-        stateFlag <=0;
-    end
-end
-
     
 endmodule
