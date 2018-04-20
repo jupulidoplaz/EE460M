@@ -1,9 +1,16 @@
 module distanceCount(CLK, steps, distWhole, distFrac);
 input CLK, steps;       //step signal from pulse gen
-input [20:0] totalSteps;
-output [20:0] distance;
-output [3:0] distFrac;
-output [6:0] distWhole; //up to 127 miles (7 bits)
+output reg [3:0] distFrac;
+output reg [6:0] distWhole; //up to 127 miles (7 bits)
+
+reg increment;
+reg [13:0] counter;
+reg [20:0] totalSteps, distance;			// not sure what these are for
+
+initial
+begin
+	increment = 0;
+end
 
 always @(posedge CLK)   
 begin
@@ -38,4 +45,3 @@ begin
     end    
 end
 endmodule
-    
