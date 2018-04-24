@@ -1,6 +1,7 @@
 module tracker(clk, reset, pulse, display, SI, led, secClk);
 input wire clk, reset, pulse;
 output wire SI, secClk;
+wire secClk2;
 output reg [15:0] display;
 reg [2:0] state, nextState;
 reg stateCount, stateFlag;
@@ -20,14 +21,15 @@ assign outNum1 = num1;
 assign outNum2 = num2;
 
 complexDivider C3(clk, secClk, 50000000, 1); 
+complexDivider C4(clk, secClk2, 50000000, !reset);
     
 stepCount S1 (clk, pulse, stepCount, SI, reset);
     
 distanceCount D1 (clk, pulse, whole, frac, reset);
     
-step32 S2 (clk, pulse, secClk, secs1, reset); //pulse is the pulse signal
+step32 S2 (clk, pulse, secClk2, secs1, reset); //pulse is the pulse signal
     
-highActivity H1(clk, pulse, secClk, secs2, reset);
+highActivity H1(clk, pulse, secClk2, secs2, reset);
 
 binary2BCD B1(outNum1, tempBCD1);
 binary2BCD B2(outNum2, tempBCD2);
@@ -46,7 +48,7 @@ begin
                 led[4:1] <= 4'b0001;
                 num1 = stepCount;
                 display = tempBCD1;
-                nextState <= 0;
+                nextState <= 1;
             end 
         1:  begin               //distance covered
                 led[4:1] <= 4'b0010;
