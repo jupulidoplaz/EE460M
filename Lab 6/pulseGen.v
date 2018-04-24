@@ -24,7 +24,7 @@ complexDivider C2   (clk, secClk, 50000000, enable[1]);
 
 
 always @(posedge clk)
-begin
+begin    
     if(!start || reset) begin
         enable <= 0;
         done <= 0;
@@ -49,10 +49,10 @@ begin
             3:  begin                       //hybrid
                     if((secCounter < 144) && (done == 0)) 
                     begin
-                        enable <= 2'b11;
+                        enable = 2'b11; //secClk is starts running
                         case(secCounter)
                         0:  slowEdge = 2439024;
-                        1:  slowEdge = 1492537;
+                        1:  slowEdge = 1492537; //1492537
                         2:  slowEdge = 751879;
                         3:  slowEdge = 1818181;
                         4:  slowEdge = 709219;
@@ -76,8 +76,10 @@ begin
                 end
        endcase
             
-    end   
+    end  
+   // oldMode <= mode; 
 end
+
 
 always @(posedge secClk or posedge reset)
 begin
