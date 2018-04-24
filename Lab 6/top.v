@@ -1,11 +1,11 @@
-module top(CLK, START, RESET, MODE, SI, an, seg, led);
+module top(CLK, START, RESET, MODE, SI, an, seg, led, PULSE);
 input wire CLK, START, RESET;
 input wire [1:0] MODE;
 output wire SI;
 output wire [3:0] an;
 output wire [6:0] seg;
 output wire [5:1] led;
-wire PULSE;
+output wire PULSE;
 wire [15:0] display;
 
 pulseGen P1 (CLK, START, MODE, PULSE, RESET);
