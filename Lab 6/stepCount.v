@@ -1,17 +1,34 @@
-module stepCount(CLK, totalSteps, stepCount, SI);
-input CLK;
-input [20:0] totalSteps;
+module stepCount(clk, pulse, stepCount, SI, reset);
+input clk, reset, pulse;
+reg [13:0] totalSteps;
 output reg [13:0] stepCount;
-output reg SI;
+output wire SI;
+reg lock;
 
-always @(posedge CLK)
+initial
 begin
-if (totalSteps <= 9998)
-    stepCounter = totalSteps;
-    SI = 0;
-else
-    stepCounter = 9999;
-    SI = 1;
+    lock = 0;
 end
+
+assign SI = (totalSteps <= 9998) ? 0 : 1;    
+
+    
+always @(posedge clk)
+begin
+    stepCount <= totalSteps;
+end
+    
+always @(posedge pulse or posedge reset)
+begin
+    if (reset)
+        totalSteps <= 0;
+    else begin
+        if (totalSteps == 9999)
+            totalSteps <= 9999;
+        else
+            totalSteps <= totalSteps + 1;    //need to check the bits of totalSteps
+    end
+end
+
 
 endmodule
