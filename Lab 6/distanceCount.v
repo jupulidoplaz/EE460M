@@ -1,47 +1,70 @@
-module distanceCount(CLK, steps, distWhole, distFrac);
-input CLK, steps;       //step signal from pulse gen
-output reg [3:0] distFrac;
-output reg [6:0] distWhole; //up to 127 miles (7 bits)
-
-reg increment;
-reg [13:0] counter;
-reg [20:0] totalSteps, distance;			// not sure what these are for
+module distanceCount (clk, pulse, whole, frac, reset);
+input clk, pulse, reset;
+output reg [6:0] whole;
+output reg [2:0] frac;
+reg [10:0] pulseCount;
+reg increment, done, lock;
 
 initial
 begin
-	increment = 0;
+    whole = 0;
+    frac = 0;
+    pulseCount = 0;
+    increment = 0;
+    done = 0;
+    lock = 0;
 end
 
-always @(posedge CLK)   
+always @(posedge clk or posedge reset or negedge reset)
 begin
-    if(increment)
-    begin
-        if(distFrac == 0)
-        begin
-            distFrac = 5;
-            distWhole = distWhole;
-        end
-        else
-        begin
-            distFrac = 0;
-            distWhole = distWhole + 1;
-        end            
+    if (reset) begin
+        whole <= 0;
+        frac <= 0;
+        lock <= 1;
     end
-    
+    else if (increment && !done) begin  //done makes sure it only increments once
+        lock <= 0;                      //lock makes sure that it starts back up again when reset is deasserted
+        done <= 1;
+        if(!frac)   begin
+            frac <= 5;
+            whole <= whole;
+        end       
+        else begin
+            frac <= 0;
+            whole <= whole + 1;
+        end 
+    end
+    else if(!increment) begin
+        lock <= 0;
+        done <= 0;
+        frac <= frac;
+        whole <= whole;
+    end   
+    else    begin
+        lock <= 0;
+        done <= done;
+        frac <= frac;
+        whole <= whole;
+    end
 end
 
-    always@(posedge steps)
+always @(posedge pulse)
 begin
-    counter = counter + 1;
-    if(counter == 1024)
-    begin
-        increment <= 1;
-        counter <= 0;
-    end
-    else
-    begin
+    if (lock)   begin
+        pulseCount <= 0;
         increment <= 0;
-        counter <= counter;
-    end    
+    end
+    else begin
+        pulseCount = pulseCount + 1;
+        if(pulseCount == 1024)  begin
+            pulseCount <= 0;
+            increment <= 1;
+        end
+        else    begin
+            pulseCount <= pulseCount;
+            increment <= 0;
+        end
+    end
 end
+
 endmodule
