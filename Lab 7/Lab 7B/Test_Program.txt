@@ -13,26 +13,26 @@
 08000005 ;j loop
 0C00001D ;jal operation1
 08000005 ;j loop
-0c00001F ;jal operation2
+0C00001F ;jal operation2
 08000005 ;j loop
-0c000021 ;jal operation3
+0C000021 ;jal operation3
 08000005 ;j loop
-0c000023 ;jal operation4
+0C000023 ;jal operation4
 08000005 ;j loop
-0c000025 ;jal operation5
+0C000025 ;jal operation5
 08000005 ;j loop
-0c000027 ;jal operation6
+0C000027 ;jal operation6
 08000005 ;j loop
 00850018 ;mult $4,$5
 00001012 ;mflo $2
 00001810 ;mfhi $3
-03e00008 ;jr $31
+03E00008 ;jr $31
 0085102D ;add8 $2, $4, $5
-03e00008 ;jr $31
-3c021000 ;lui $2, 4096
-03e00008 ;jr $31
+03E00008 ;jr $31
+3C021000 ;lui $2, 4096
+03E00008 ;jr $31
 0045002F ;rbit $2, $5
-03e00008 ;jr $31
+03E00008 ;jr $31
 00440030 ;rev $2, $4
 03E00008 ;jr $31
 00A51031 ;sadd $2, $5, $5
