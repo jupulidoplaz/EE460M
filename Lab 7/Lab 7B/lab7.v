@@ -162,11 +162,11 @@ module MIPS (CLK, RST, CS, WE, ADDR, Mem_Bus, R1, R2, R3);
   reg [5:0] op, opsave;
   wire [1:0] format;
   reg [31:0] instr, alu_result;
-  reg [6:0] pc, npc;
+  reg [6:0] pc, npc, pcsave;
   wire [31:0] imm_ext, alu_in_A, alu_in_B, reg_in, readreg1, readreg2;
   reg [31:0] alu_result_save;
   reg regw, writing, reg_or_imm, reg_or_imm_save;
-  reg [1:0] alu_or_mem, alu_or_mem_save;		// changed these from 1-bit to 2-bit to incorporate JAL's PC save
+  reg alu_or_mem, alu_or_mem_save;		// changed these from 1-bit to 2-bit to incorporate JAL's PC save
   reg fetchDorI;
   wire [4:0] dr;
   reg [2:0] state, nstate;
@@ -176,10 +176,10 @@ module MIPS (CLK, RST, CS, WE, ADDR, Mem_Bus, R1, R2, R3);
 
   //combinational
   assign imm_ext = (instr[15] == 1)? {16'hFFFF, instr[15:0]} : {16'h0000, instr[15:0]};//Sign extend immediate field
-  assign dr = ((format == R) && ((`f_code == rbit) || (`f_code == rev)))? instr[25:21] : ((format == R)? instr[15:11] : instr[20:16]); //Destination Register MUX (MUX1)	***modded for extra instructions having rs as destination register***
+  assign dr = (`opcode == jal)? 5'd31 : (((format == R) && ((`f_code == rbit) || (`f_code == rev)))? instr[25:21] : ((format == R)? instr[15:11] : instr[20:16])); //Destination Register MUX (MUX1)	***modded for extra instructions having rs as destination register***
   assign alu_in_A = readreg1;
   assign alu_in_B = (reg_or_imm_save)? imm_ext : readreg2; //ALU MUX (MUX2)
-  assign reg_in = (alu_or_mem_save == 2'b01)? Mem_Bus : ((alu_or_mem_save == 2'b00)? alu_result_save : pc + 1); //Data MUX			not sure if pc + 1 is correct here
+  assign reg_in = (`opcode == jal)? pcsave : ((alu_or_mem_save)? Mem_Bus : alu_result_save); //Data MUX
   assign format = (`opcode == 6'd0)? R : (((`opcode == 6'd2) | (`opcode == 6'd3))? J : I);
   assign Mem_Bus = (writing)? readreg2 : 32'bZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZ;
   assign HI = prod[63:32];
@@ -213,6 +213,7 @@ module MIPS (CLK, RST, CS, WE, ADDR, Mem_Bus, R1, R2, R3);
         nstate = 3'd2; reg_or_imm = 0; alu_or_mem = 0;
         if (format == J) begin //jump, and finish
           npc = instr[6:0];
+	  if (`opcode == jal) nstate = 3'd3;
           nstate = 3'd0;
         end
         else if (format == R) //register instructions
@@ -305,6 +306,7 @@ module MIPS (CLK, RST, CS, WE, ADDR, Mem_Bus, R1, R2, R3);
 
     if (state == 3'd0) instr <= Mem_Bus;
     else if (state == 3'd1) begin
+      pcsave <= pc;
       opsave <= op;
       reg_or_imm_save <= reg_or_imm;
       alu_or_mem_save <= alu_or_mem;
