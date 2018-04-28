@@ -17,7 +17,7 @@ module Memory(CS, WE, CLK, ADDR, Mem_Bus);
 //    begin
 //      RAM[i] = 32'd0; //initialize all locations to 0
 		//    end
-		$readmemh("MIPS_Instructions.txt", RAM);
+		$readmemh("rotatingLED.txt", RAM);
     
   end
 
