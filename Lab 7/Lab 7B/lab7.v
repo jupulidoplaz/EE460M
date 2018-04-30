@@ -139,6 +139,8 @@ module MIPS (CLK, RST, CS, WE, ADDR, Mem_Bus, R1, R2, R3);
   parameter sadd = 6'b110001;
   parameter ssub = 6'b110010;
 
+  parameter null = 6'b000000;
+  
   //non-special instructions, values of opcodes:
   parameter addi = 6'b001000;
   parameter andi = 6'b001100;
@@ -172,7 +174,7 @@ module MIPS (CLK, RST, CS, WE, ADDR, Mem_Bus, R1, R2, R3);
   reg [2:0] state, nstate;
   reg [63:0] prod;					// added mult regs
   wire [31:0] HI, LO;
-  reg [31:0] i;						// for RBIT FOR loop
+  integer i;						// for RBIT FOR loop
 
   //combinational
   assign imm_ext = (instr[15] == 1)? {16'hFFFF, instr[15:0]} : {16'h0000, instr[15:0]};//Sign extend immediate field
@@ -231,6 +233,7 @@ module MIPS (CLK, RST, CS, WE, ADDR, Mem_Bus, R1, R2, R3);
           end
           else if (`opcode == andi) op = and1;
           else if (`opcode == ori) op = or1;
+          else if (`opcode == lui) op = null;
         end
       end
       2: begin //execute
@@ -251,8 +254,8 @@ module MIPS (CLK, RST, CS, WE, ADDR, Mem_Bus, R1, R2, R3);
 	  for (i = 0; i < 32; i = i + 1) alu_result[i] = alu_in_B[31-i];					// RBIT (not sure if alu_in_B correct) <-- may also cause issue with following instructions
 	else if (opsave == rev) alu_result = {alu_in_B[7:0], alu_in_B[15:8], alu_in_B[23:16], alu_in_B[31:24]};	// REV
 	else if (opsave == sadd) begin
-	  if ((~(32'd0) - alu_in_A) < alu_in_B) alu_result = ~(32'd0);						// SADD (not sure if ~32'd0 gives expected 4294967295 (2^32 - 1))
-	  else alu_result = alu_in_A + alu_in_B;
+      if ((~(32'd0) - alu_in_A) < alu_in_B) alu_result = ~(32'd0);                        // SADD (not sure if ~32'd0 gives expected 4294967295 (2^32 - 1))
+      else alu_result = alu_in_A + alu_in_B;
 	end
 	else if (opsave == ssub) begin										// SSUB
 	  if (alu_in_A < alu_in_B) alu_result = 0;
@@ -267,7 +270,7 @@ module MIPS (CLK, RST, CS, WE, ADDR, Mem_Bus, R1, R2, R3);
           npc = alu_in_A[6:0];
           nstate = 3'd0;
         end
-	if (`opcode == lui) alu_result = {imm_ext, 16'b0000000000000000};				// modded for LUI	
+	if (`opcode == lui) alu_result = {alu_in_B, 16'd0};						// modded for LUI		
       end
       3: begin //prepare to write to mem
         nstate = 3'd0;
