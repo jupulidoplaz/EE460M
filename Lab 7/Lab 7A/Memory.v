@@ -13,10 +13,6 @@ module Memory(CS, WE, CLK, ADDR, Mem_Bus);
 
   initial
   begin
-//    for (i=0; i<128; i=i+1)
-//    begin
-//      RAM[i] = 32'd0; //initialize all locations to 0
-		//    end
 		$readmemh("rotatingLED.txt", RAM);
     
   end
